@@ -1,0 +1,5 @@
+FROM postgres:18.0-alpine3.22
+
+
+COPY pkg/db/setup.sql /docker-entrypoint-initdb.d/
+
