@@ -1,4 +1,4 @@
-package main
+package common
 
 import (
 	"context"
@@ -27,7 +27,9 @@ func GetDBConnectionString() string {
 	checkEnvVar(dbPassword, "POSTGRES_PASSWORD")
 
 	dbHost := os.Getenv("POSTGRES_HOST")
-	checkEnvVar(dbHost, "POSTGRES_HOST")
+	if dbHost == "" {
+		dbHost = "localhost"
+	}
 
 	dbName := os.Getenv("POSTGRES_DB")
 	checkEnvVar(dbName, "POSTGRES_DB")
