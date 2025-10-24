@@ -66,6 +66,7 @@ func (s *SchedulerServer) awaitShutdown() error {
 }
 
 func (s *SchedulerServer) Stop() error {
+	s.cancel()
 	s.dbPool.Close()
 	if s.httpServer != nil {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)

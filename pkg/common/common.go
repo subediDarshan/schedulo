@@ -11,10 +11,12 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
+const DefaultHeartbeatInterval = 5 * time.Second
+
 func GetDBConnectionString() string {
 	var missingEnv []string
 
-	checkEnvVar := func (envVar, envVarName string) {
+	checkEnvVar := func(envVar, envVarName string) {
 		if envVar == "" {
 			missingEnv = append(missingEnv, envVarName)
 		}
@@ -38,7 +40,6 @@ func GetDBConnectionString() string {
 		log.Fatalf("Missing env variables: %s", strings.Join(missingEnv, ", "))
 	}
 
-
 	return fmt.Sprintf("postgres://%s:%s@%s:5432/%s", dbUser, dbPassword, dbHost, dbName)
 }
 
@@ -56,30 +57,19 @@ func ConnectToDB(ctx context.Context, dbConnectionString string) (*pgxpool.Pool,
 
 		log.Print("Failed to connect to db. Retrying in 5 seconds...", err)
 
-		time.Sleep(5*time.Second)
+		time.Sleep(5 * time.Second)
 
 		retryCount++
 
 	}
-
 
 	if err != nil {
 		log.Print("Error connecting to db")
 		return nil, err
 	}
 
-	
-
 	log.Print("Connected to Database")
 
 	return dbPool, nil
 
-
 }
-
-
-
-
-
-
-

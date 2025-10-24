@@ -1,6 +1,6 @@
-FROM golang:1.25.3-alpine3.22
+FROM golang:1.25.1
 
-RUN apk add --no-cache git
+RUN apt-get update && apt-get install -y git
 
 WORKDIR /app
 

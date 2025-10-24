@@ -1,0 +1,52 @@
+syntax="proto3";
+
+package grpcapi;
+
+option go_package="./pkg/grpcapi";
+
+
+service CoordinatorService {
+    rpc SendHeartbeat(HeartbeatRequest) returns (HeartbeatResponse) {}
+    rpc UpdateTaskStatus(UpdateTaskStatusRequest) returns (UpdateTaskStatusResponse) {}
+}
+
+message HeartbeatRequest {
+    uint32 workerId = 1;
+    string address = 2;
+}
+
+message HeartbeatResponse {
+    bool acknowledged = 1;
+}
+
+message UpdateTaskStatusRequest {
+    string taskId = 1;
+    TaskStatus status = 2;
+    int64 startedAt = 3;
+    int64 completedAt = 4;
+    int64 failedAt = 5;
+}
+
+enum TaskStatus {
+    STARTED = 0;
+    COMPLETED = 1;
+    FAILED = 2;
+}
+
+message UpdateTaskStatusResponse {
+    bool success = 1;
+}
+
+
+service WorkerService {
+    rpc SubmitTask(SubmitTaskRequest) returns (SubmitTaskResponse) {}
+}
+
+message SubmitTaskRequest {
+    string taskId = 1;
+    string endpoint = 2;
+}
+
+message SubmitTaskResponse {
+    bool success = 1;
+}
