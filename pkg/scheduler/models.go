@@ -6,12 +6,14 @@ import (
 
 type TaskRequest struct {
 	Endpoint     string `json:"endpoint"`
+	Cron_Secret  string `json:"cron_secret"`
 	Scheduled_at string `json:"scheduled_at"`
 }
 
 type Task struct {
-	Id           string `json:"task_id"`
-	Endpoint     string `json:"endpoint"`
+	Id           string           `json:"task_id"`
+	Endpoint     string           `json:"endpoint"`
+	Cron_Secret  string           `json:"cron_secret"`
 	Scheduled_at pgtype.Timestamp `json:"scheduled_at"`
 	Picked_at    pgtype.Timestamp `json:"picked_at"`
 	Started_at   pgtype.Timestamp `json:"started_at"`
@@ -24,4 +26,3 @@ type TaskResponse struct {
 	Endpoint     string `json:"endpoint"`
 	Scheduled_at string `json:"scheduled_at"`
 }
-

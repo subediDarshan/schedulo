@@ -18,7 +18,6 @@ import (
 )
 
 const (
-	taskProcessTime = 5 * time.Second
 	workerPoolSize  = 5
 )
 

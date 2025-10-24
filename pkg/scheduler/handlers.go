@@ -22,7 +22,7 @@ func (s *SchedulerServer) handleScheduleTask(w http.ResponseWriter, r *http.Requ
 		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
 
-	log.Printf("Received schedule request: %+v", taskRequest)
+	log.Printf("Received schedule request: Scheduled at: %v, Endpoint: %v", taskRequest.Scheduled_at, taskRequest.Endpoint)
 
 	parsedTime, err := time.Parse(time.RFC3339, taskRequest.Scheduled_at)
 	if err != nil {
@@ -32,7 +32,7 @@ func (s *SchedulerServer) handleScheduleTask(w http.ResponseWriter, r *http.Requ
 
 	utcTime := parsedTime.UTC()
 
-	taskId, err := s.insertTaskIntoDB(context.Background(), Task{Endpoint: taskRequest.Endpoint, Scheduled_at: pgtype.Timestamp{Time: utcTime, Status: pgtype.Present}})
+	taskId, err := s.insertTaskIntoDB(context.Background(), Task{Endpoint: taskRequest.Endpoint, Cron_Secret: taskRequest.Cron_Secret, Scheduled_at: pgtype.Timestamp{Time: utcTime, Status: pgtype.Present}})
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Failed to store task in DB. %s", err.Error()), http.StatusInternalServerError)
 		return

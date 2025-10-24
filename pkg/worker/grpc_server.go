@@ -39,7 +39,7 @@ func (w *WorkerServer) startGRPCServer() error {
 }
 
 func (w *WorkerServer) SubmitTask(ctx context.Context, req *pb.SubmitTaskRequest) (*pb.SubmitTaskResponse, error) {
-	log.Printf("Received task: %+v", req)
+	log.Printf("Received task: Task ID: %v, Endpoint: %v", req.GetTaskId(), req.GetEndpoint())
 
 	w.ReceivedTasksMutex.Lock()
 	w.ReceivedTasks[req.GetTaskId()] = req

@@ -3,11 +3,11 @@ package scheduler
 import "context"
 
 func (s *SchedulerServer) insertTaskIntoDB(ctx context.Context, task Task) (string, error) {
-	sqlQuery := "INSERT INTO tasks (endpoint, scheduled_at) VALUES ($1, $2) RETURNING id"
+	sqlQuery := "INSERT INTO tasks (endpoint, scheduled_at, cron_secret) VALUES ($1, $2, $3) RETURNING id"
 
 	var insertedTaskId string
 
-	err := s.dbPool.QueryRow(ctx, sqlQuery, task.Endpoint, task.Scheduled_at).Scan(&insertedTaskId)
+	err := s.dbPool.QueryRow(ctx, sqlQuery, task.Endpoint, task.Scheduled_at, task.Cron_Secret).Scan(&insertedTaskId)
 	if err != nil {
 		return "", err
 	}
@@ -17,7 +17,7 @@ func (s *SchedulerServer) insertTaskIntoDB(ctx context.Context, task Task) (stri
 }
 
 func (s *SchedulerServer) getTaskStatusFromDB(ctx context.Context, taskId string) (Task, error) {
-	sqlQuery := "SELECT * FROM tasks WHERE id = $1"
+	sqlQuery := "SELECT id, endpoint, scheduled_at, picked_at, started_at, completed_at, failed_at FROM tasks WHERE id = $1"
 
 	var task Task
 

@@ -25,8 +25,8 @@ func (w *WorkerServer) connectToCoordinator() error {
 }
 
 func (w *WorkerServer) periodicHeartbeat() {
-	w.wg.Add(1)       // Add this goroutine to the waitgroup.
-	defer w.wg.Done() // Signal this goroutine is done when the function returns
+	w.wg.Add(1)      
+	defer w.wg.Done() 
 
 	ticker := time.NewTicker(w.heartbeatInterval)
 	defer ticker.Stop()

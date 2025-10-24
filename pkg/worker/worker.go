@@ -2,6 +2,7 @@ package worker
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -35,7 +36,7 @@ func (w *WorkerServer) worker() {
 }
 
 func (w *WorkerServer) processTask(task *pb.SubmitTaskRequest) error {
-	log.Printf("Processing task: %+v", task)
+	log.Printf("Processing task: Task ID: %v, Endpoint: %v", task.GetTaskId(), task.GetEndpoint())
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -48,6 +49,7 @@ func (w *WorkerServer) processTask(task *pb.SubmitTaskRequest) error {
 	}
 
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer " + task.GetCronSecret())
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
@@ -57,6 +59,12 @@ func (w *WorkerServer) processTask(task *pb.SubmitTaskRequest) error {
 		return err
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		log.Printf("Task %s returned error status: %s", task.GetTaskId(), resp.Status)
+		go w.updateTaskStatus(task, pb.TaskStatus_FAILED)
+		return fmt.Errorf("task %s failed with status code %d", task.GetTaskId(), resp.StatusCode)
+	}
 
 	log.Printf("Task %s executed. Status: %s", task.GetTaskId(), resp.Status)
 
