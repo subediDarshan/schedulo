@@ -1,0 +1,24 @@
+FROM golang:1.25.1
+
+RUN apt-get update && apt-get install -y \
+    protobuf-compiler \
+    golang-go \
+    git
+
+RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+RUN go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+
+WORKDIR /app
+
+COPY go.mod go.sum ./
+
+RUN go mod download
+
+COPY pkg/ ./pkg/
+COPY cmd/worker/main.go .
+
+RUN ./pkg/grpcapi/compile.sh
+
+RUN go build -o worker main.go
+
+CMD ["./worker", "--coordinator=coordinator:8080"]

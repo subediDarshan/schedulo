@@ -41,6 +41,15 @@ services:
         depends_on:
             - postgres
 
+    worker:
+        build:
+            context: .
+            dockerfile: worker-dockerfile
+        environment:
+            WORKER_ADDRESS: worker
+        depends_on:
+            - coordinator
+
 volumes:
     data:
         driver: local
