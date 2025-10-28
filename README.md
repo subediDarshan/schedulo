@@ -4,7 +4,7 @@ A distributed task scheduling system built with Go, gRPC, and PostgreSQL that ex
 
 ## Architecture Overview
 
-![System Architecture](https://github-production-user-asset-6210df.s3.amazonaws.com/150145763/506477406-394315aa-ee4d-4bed-a38b-64e7cd5e1885.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20251028%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20251028T095358Z&X-Amz-Expires=300&X-Amz-Signature=5392db72cb7d419073738f38969c6176ef47aa4e06a43a43f466891bc4bae7fb&X-Amz-SignedHeaders=host)
+![System Architecture](architecture.png.png)
 
 **Schedulo** consists of four main components:
 
