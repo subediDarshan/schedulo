@@ -8,7 +8,9 @@ CREATE TABLE tasks (
     started_at TIMESTAMP,
     completed_at TIMESTAMP,
     failed_at TIMESTAMP,
-    cron_secret TEXT
+    bearer_token TEXT,
+    method TEXT,
+    payload BYTEA
 );
 
 CREATE INDEX idx_scheduled_at ON tasks (scheduled_at);

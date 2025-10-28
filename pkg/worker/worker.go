@@ -1,8 +1,10 @@
 package worker
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"time"
@@ -36,12 +38,18 @@ func (w *WorkerServer) worker() {
 }
 
 func (w *WorkerServer) processTask(task *pb.SubmitTaskRequest) error {
-	log.Printf("Processing task: Task ID: %v, Endpoint: %v", task.GetTaskId(), task.GetEndpoint())
+	log.Printf("Processing task: Task ID: %v, Endpoint: %v, Method: %v",
+		task.GetTaskId(), task.GetEndpoint(), task.GetMethod())
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, task.GetEndpoint(), nil)
+	var body io.Reader
+	if len(task.GetPayload()) > 0 && task.GetMethod() != http.MethodGet {
+		body = bytes.NewReader(task.GetPayload())
+	}
+
+	req, err := http.NewRequestWithContext(ctx, task.GetMethod(), task.GetEndpoint(), body)
 	if err != nil {
 		log.Printf("Failed to create request for task %s: %v", task.GetTaskId(), err)
 		go w.updateTaskStatus(task, pb.TaskStatus_FAILED)
@@ -49,7 +57,9 @@ func (w *WorkerServer) processTask(task *pb.SubmitTaskRequest) error {
 	}
 
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Bearer " + task.GetCronSecret())
+	if token := task.GetBearerToken(); token != "" {
+		req.Header.Set("Authorization", "Bearer "+token)
+	}
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
@@ -67,8 +77,6 @@ func (w *WorkerServer) processTask(task *pb.SubmitTaskRequest) error {
 	}
 
 	log.Printf("Task %s executed. Status: %s", task.GetTaskId(), resp.Status)
-
-	log.Printf("Completed task: %+v", task)
 
 	return nil
 }

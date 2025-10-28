@@ -44,7 +44,7 @@ func (s *CoordinatorServer) scanAndSubmit() {
 		}
 	}()
 
-	rows, err := tx.Query(ctx, `SELECT id, endpoint, cron_secret FROM tasks WHERE scheduled_at < (Now() + INTERVAL '30 seconds') AND picked_at IS NULL ORDER BY scheduled_at FOR UPDATE SKIP LOCKED`)
+	rows, err := tx.Query(ctx, `SELECT id, endpoint, bearer_token, method, payload FROM tasks WHERE scheduled_at < (Now() + INTERVAL '30 seconds') AND picked_at IS NULL ORDER BY scheduled_at FOR UPDATE SKIP LOCKED`)
 	if err != nil {
 		log.Printf("Error executing query. %v\n", err)
 		return
@@ -55,13 +55,14 @@ func (s *CoordinatorServer) scanAndSubmit() {
 	var tasks []*pb.SubmitTaskRequest
 
 	for rows.Next() {
-		var id, endpoint, cronSecret string
-		if err := rows.Scan(&id, &endpoint, &cronSecret); err != nil {
+		var id, endpoint, bearerToken, method string
+		var payload []byte
+		if err := rows.Scan(&id, &endpoint, &bearerToken, &method, &payload); err != nil {
 			log.Printf("Failed to scan row. %v\n", err)
 			continue
 		}
 
-		tasks = append(tasks, &pb.SubmitTaskRequest{TaskId: id, Endpoint: endpoint, CronSecret: cronSecret})
+		tasks = append(tasks, &pb.SubmitTaskRequest{TaskId: id, Endpoint: endpoint, BearerToken: bearerToken, Method: method, Payload: payload})
 	}
 
 	if err := rows.Err(); err != nil {

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/jackc/pgtype"
@@ -21,6 +22,14 @@ func (s *SchedulerServer) handleScheduleTask(w http.ResponseWriter, r *http.Requ
 	if err := json.NewDecoder(r.Body).Decode(&taskRequest); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
+	taskRequest.Method = strings.ToUpper(taskRequest.Method)
+	switch taskRequest.Method {
+		case http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodPatch, http.MethodHead, http.MethodOptions:
+			// valid method
+		default:
+			http.Error(w, "invalid HTTP method", http.StatusBadRequest)
+			return
+	}
 
 	log.Printf("Received schedule request: Scheduled at: %v, Endpoint: %v", taskRequest.Scheduled_at, taskRequest.Endpoint)
 
@@ -32,7 +41,7 @@ func (s *SchedulerServer) handleScheduleTask(w http.ResponseWriter, r *http.Requ
 
 	utcTime := parsedTime.UTC()
 
-	taskId, err := s.insertTaskIntoDB(context.Background(), Task{Endpoint: taskRequest.Endpoint, Cron_Secret: taskRequest.Cron_Secret, Scheduled_at: pgtype.Timestamp{Time: utcTime, Status: pgtype.Present}})
+	taskId, err := s.insertTaskIntoDB(context.Background(), Task{Endpoint: taskRequest.Endpoint, Bearer_Token: taskRequest.Bearer_Token, Scheduled_at: pgtype.Timestamp{Time: utcTime, Status: pgtype.Present}, Method: taskRequest.Method, Payload: pgtype.Bytea{Bytes: taskRequest.Payload, Status: pgtype.Present}})
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Failed to store task in DB. %s", err.Error()), http.StatusInternalServerError)
 		return

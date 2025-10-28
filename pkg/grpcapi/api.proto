@@ -45,7 +45,9 @@ service WorkerService {
 message SubmitTaskRequest {
     string taskId = 1;
     string endpoint = 2;
-    string cronSecret = 3;
+    string bearerToken = 3;
+    string method = 4;
+    bytes payload = 5;
 }
 
 message SubmitTaskResponse {
