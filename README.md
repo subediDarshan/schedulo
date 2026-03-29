@@ -6,6 +6,10 @@ A distributed task scheduling system built with Go, gRPC, and PostgreSQL that ex
 
 ![System Architecture](architecture.png)
 
+## Demo
+
+[![Watch Demo](https://cdn.loom.com/sessions/thumbnails/cdc33158a5c546028f516591293df8ec-00b12afb6b3083e1-full-play.gif#t=0.1)](https://www.loom.com/share/cdc33158a5c546028f516591293df8ec)
+
 **Schedulo** consists of four main components:
 
 ### 1. **Scheduler Service** (HTTP API Layer)
