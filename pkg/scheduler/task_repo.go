@@ -17,11 +17,11 @@ func (s *SchedulerServer) insertTaskIntoDB(ctx context.Context, task Task) (stri
 }
 
 func (s *SchedulerServer) getTaskStatusFromDB(ctx context.Context, taskId string) (Task, error) {
-	sqlQuery := "SELECT id, endpoint, scheduled_at, picked_at, started_at, completed_at, failed_at FROM tasks WHERE id = $1"
+	sqlQuery := "SELECT id, endpoint, scheduled_at, picked_at, started_at, completed_at, failed_at, bearer_token, method, payload FROM tasks WHERE id = $1"
 
 	var task Task
 
-	err := s.dbPool.QueryRow(ctx, sqlQuery, taskId).Scan(&task.Id, &task.Endpoint, &task.Scheduled_at, &task.Picked_at, &task.Started_at, &task.Completed_at, &task.Failed_at)
+	err := s.dbPool.QueryRow(ctx, sqlQuery, taskId).Scan(&task.Id, &task.Endpoint, &task.Scheduled_at, &task.Picked_at, &task.Started_at, &task.Completed_at, &task.Failed_at, &task.Bearer_Token, &task.Method, &task.Payload)
 	if err != nil {
 		return Task{}, err
 	}
