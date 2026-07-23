@@ -124,7 +124,7 @@ POST http://localhost:8081/schedule
 Content-Type: application/json
 
 {
-  "endpoint": "https://api.example.com/api/task",
+  "endpoint": "https://postman-echo.com/post",
   "scheduled_at": "2025-10-29T15:30:00Z",
   "method": "POST",
   "bearer_token": "your-token-here",
@@ -137,7 +137,7 @@ Content-Type: application/json
 ```json
 {
   "task_id": "550e8400-e29b-41d4-a716-446655440000",
-  "endpoint": "https://api.example.com/api/task",
+  "endpoint": "https://postman-echo.com/post",
   "scheduled_at": "2025-10-29T15:30:00Z"
 }
 ```
@@ -153,7 +153,7 @@ GET http://localhost:8081/status?task_id=550e8400-e29b-41d4-a716-446655440000
 ```json
 {
   "task_id": "550e8400-e29b-41d4-a716-446655440000",
-  "endpoint": "https://api.example.com/api/task",
+  "endpoint": "https://postman-echo.com/post",
   "scheduled_at": "2025-10-29T15:30:00Z",
   "picked_at": "2025-10-29T15:29:55Z",
   "started_at": "2025-10-29T15:30:01Z",
